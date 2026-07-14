@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>知识图谱平台 · 完整PRD原型 (最终完整版)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: #f4f7fc;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== 侧边栏 ===== */
+        .sidebar {
+            width: 220px;
+            background: #0b1a2e;
+            color: #b0c7e7;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            padding: 16px 0 24px 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
+            z-index: 10;
+        }
+        .sidebar .logo {
+            padding: 0 16px 24px 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar .logo i {
+            color: #4f9fff;
+            font-size: 24px;
+        }
+        .sidebar .nav-section {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #4a6a8a;
+            padding: 12px 16px 4px 16px;
+            font-weight: 600;
+        }
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            margin: 1px 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #b0c7e7;
+            transition: all 0.12s;
+        }
+        .sidebar .nav-item i {
+            width: 18px;
+            font-size: 14px;
+            color: #4a6a8a;
+        }
+        .sidebar .nav-item:hover {
+            background: #162b44;
+            color: #e8f0fe;
+        }
+        .sidebar .nav-item.active {
+            background: #1c3e62;
+            color: #fff;
+        }
+        .sidebar .nav-item.active i {
+            color: #4f9fff;
+        }
+
+        /* ===== 主内容 ===== */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f4f7fc;
+        }
+        .topbar {
+            height: 56px;
+            background: #fff;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e9edf4;
+            flex-shrink: 0;
+        }
+        .topbar .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0b1a2e;
+        }
+        .topbar .page-title .sub {
+            font-weight: 400;
+            color: #6b7a8f;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .topbar .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: #3d5166;
+        }
+        .topbar .badge {
+            background: #ecf3fa;
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #1a3a5c;
+        }
+
+        .page-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 28px 40px 28px;
+        }
+        .page {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0.4;
+                transform: translateY(4px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 通用组件 ===== */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px 22px;
+            border: 1px solid #eef2f8;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .card-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0b1a2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-header .action-link {
+            color: #1a73e8;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.12s;
+            background: #eef2f8;
+            color: #1a2c44;
+        }
+        .btn-primary {
+            background: #1a73e8;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d0d9e8;
+        }
+        .btn-outline:hover {
+            background: #f0f4fc;
+        }
+        .btn-success {
+            background: #1e8e3e;
+            color: #fff;
+        }
+        .btn-sm {
+            padding: 3px 12px;
+            font-size: 12px;
+        }
+        .btn-danger {
+            background: #c62828;
+            color: #fff;
+        }
+        .btn-warning {
+            background: #e37400;
+            color: #fff;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-badge.green {
+            background: #e6f4ea;
+            color: #1e8e3e;
+        }
+        .status-badge.blue {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+        .status-badge.yellow {
+            background: #fef7e0;
+            color: #b06000;
+        }
+        .status-badge.gray {
+            background: #f1f3f6;
+            color: #5f6b7a;
+        }
+        .status-badge.red {
+            background: #fce8e6;
+            color: #c62828;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border: 1px solid #eef2f8;
+            border-radius: 10px;
+            padding: 14px 18px;
+        }
+        .stat-card .num {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0b1a2e;
+        }
+        .stat-card .label {
+            font-size: 12px;
+            color: #6b7a8f;
+            margin-top: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table th {
+            text-align: left;
+            padding: 8px 6px 6px 6px;
+            font-weight: 600;
+            color: #3d5166;
+            border-bottom: 1px solid #eef2f8;
+            font-size: 12px;
+        }
+        table td {
+            padding: 10px 6px;
+            border-bottom: 1px solid #f2f5fa;
+            color: #1f2a3f;
+        }
+        table tr:hover td {
+            background: #f8faff;
+        }
+        .text-muted {
+            color: #6b7a8f;
+        }
+        .text-sm {
+            font-size: 12px;
+        }
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .gap-6 {
+            gap: 6px;
+        }
+        .tag {
+            display: inline-block;
+            background: #eef2f8;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #1f2a3f;
+            margin: 2px 2px 2px 0;
+        }
+        .tag-blue {
+            background: #dbeafe;
+            color: #1a3a6a;
+        }
+        .tag-green {
+            background: #e6f4ea;
+            color: #1e8e3e;
+        }
+        .tag-red {
+            background: #fce8e6;
+            color: #c62828;
+        }
+
+        .tree {
+            padding-left: 4px;
+        }
+        .tree-item {
+            padding: 4px 0 4px 18px;
+            border-left: 2px solid #dde4ef;
+            margin-left: 8px;
+        }
+        .tree-item .node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 8px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .tree-item .node:hover {
+            background: #f0f5ff;
+        }
+        .tree-item .node i {
+            color: #4f9fff;
+            width: 16px;
+            font-size: 13px;
+        }
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .detail-panel {
+            background: #fff;
+            border: 1px solid #eef2f8;
+            border-radius: 12px;
+            padding: 18px;
+        }
+        .detail-panel .label {
+            font-size: 11px;
+            color: #6b7a8f;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .detail-panel .value {
+            font-size: 13px;
+            color: #0b1a2e;
+            padding: 3px 0;
+        }
+        .rule-editor {
+            background: #f8faff;
+            border: 1px solid #e9edf4;
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .rule-editor select,
+        .rule-editor input {
+            padding: 5px 10px;
+            border: 1px solid #d0d9e8;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 13px;
+        }
+        .rule-preview {
+            background: #f4f8fe;
+            border-left: 4px solid #1a73e8;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #0b1a2e;
+            overflow-x: auto;
+        }
+
+        .extraction-box {
+            background: #fafcff;
+            border: 1px solid #eef2f8;
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 180px;
+        }
+        .extraction-box .box-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0b1a2e;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .extraction-item {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border: 1px solid #e9edf4;
+            font-size: 13px;
+        }
+        .extraction-item .source-tag {
+            background: #eef2f8;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #5f6b7a;
+        }
+        .extraction-item .target-tag {
+            background: #e6f4ea;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #1e8e3e;
+        }
+        .log-item {
+            font-size: 12px;
+            font-family: monospace;
+            padding: 4px 0;
+            border-bottom: 1px dashed #eef2f8;
+        }
+        .log-item .hit {
+            color: #1e8e3e;
+        }
+        .log-item .miss {
+            color: #c62828;
+        }
+
+        .graph-canvas {
+            background: #fafcff;
+            border: 1px solid #e9edf4;
+            border-radius: 12px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        .schema-graph-canvas {
+            height: 340px;
+        }
+
+        .prototype-note {
+            background: #eef6ff;
+            border-radius: 10px;
+            padding: 12px 18px;
+            color: #1a3a5c;
+            font-size: 13px;
+            border: 1px dashed #b3cff5;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .prototype-note i {
+            color: #1a73e8;
+            font-size: 16px;
+        }
+
+        .action-type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 8px 0 12px 0;
+        }
+        .action-type-card {
+            border: 2px solid #e9edf4;
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.12s;
+            background: #fafcff;
+        }
+        .action-type-card:hover {
+            border-color: #b3cff5;
+        }
+        .action-type-card.active {
+            border-color: #1a73e8;
+            background: #eef6ff;
+        }
+        .action-type-card .title {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .action-type-card .desc {
+            font-size: 12px;
+            color: #6b7a8f;
+            margin-top: 2px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .slider-row input[type="range"] {
+            flex: 1;
+            accent-color: #1a73e8;
+        }
+        .slider-row .val {
+            font-weight: 600;
+            font-size: 14px;
+            min-width: 40px;
+            color: #0b1a2e;
+        }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 20px;
+            margin-top: 6px;
+        }
+        .auth-grid label {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            cursor: pointer;
+        }
+        .auth-grid label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #1a73e8;
+        }
+
+        .config-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e9edf4;
+            margin-bottom: 16px;
+        }
+        .config-tab {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #5f6b7a;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.12s;
+        }
+        .config-tab.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+        }
+        .config-panel {
+            display: none;
+        }
+        .config-panel.active {
+            display: block;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.35);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 18px;
+            max-width: 580px;
+            width: 100%;
+            padding: 28px 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.18s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-box h3 {
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+        .modal-box .field {
+            margin-bottom: 14px;
+        }
+        .modal-box .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1f2a3f;
+            margin-bottom: 3px;
+        }
+        .modal-box .field input,
+        .modal-box .field select,
+        .modal-box .field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d0d9e8;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #fff;
+        }
+        .modal-box .field textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        .modal-box .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .schema-node {
+            position: absolute;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            z-index: 2;
+            text-align: center;
+            white-space: nowrap;
+            cursor: default;
+        }
+        .schema-node .sub {
+            font-weight: 400;
+            font-size: 9px;
+            opacity: 0.8;
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 60px;
+            }
+            .sidebar .logo span,
+            .sidebar .nav-item span,
+            .sidebar .nav-section {
+                display: none;
+            }
+            .sidebar .nav-item {
+                justify-content: center;
+                padding: 10px;
+            }
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .action-type-grid {
+                grid-template-columns: 1fr;
+            }
+            .auth-grid {
+                grid-template-columns: 1fr;
+            }
+            .schema-graph-canvas {
+                height: 240px;
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d0d9e8;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 侧边栏 ===== -->
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-network-wired"></i><span>知识图谱</span></div>
+        <div class="nav-section">设计态</div>
+        <div class="nav-item active" data-page="page-ontology"><i class="fas fa-sitemap"></i><span>本体设计</span></div>
+        <div class="nav-item" data-page="page-properties"><i class="fas fa-hashtag"></i><span>属性管理</span></div>
+        <div class="nav-item" data-page="page-relations"><i class="fas fa-arrow-right-arrow-left"></i><span>关系管理</span></div>
+        <div class="nav-item" data-page="page-rules"><i class="fas fa-code-branch"></i><span>规则配置</span></div>
+        <div class="nav-item" data-page="page-synonyms"><i class="fas fa-exchange-alt"></i><span>同义词映射</span></div>
+        <div class="nav-section">运行态</div>
+        <div class="nav-item" data-page="page-documents"><i class="fas fa-file-upload"></i><span>文档管理</span></div>
+        <div class="nav-item" data-page="page-extraction-config"><i class="fas fa-sliders-h"></i><span>抽取配置</span></div>
+        <div class="nav-item" data-page="page-extraction"><i class="fas fa-robot"></i><span>抽取结果</span></div>
+        <div class="nav-item" data-page="page-postprocess"><i class="fas fa-check-double"></i><span>质量预检</span></div>
+        <div class="nav-item" data-page="page-fusion"><i class="fas fa-merge"></i><span>融合审核</span></div>
+        <div class="nav-item" data-page="page-materialization"><i class="fas fa-bolt"></i><span>推理物化</span></div>
+        <div class="nav-section">服务</div>
+        <div class="nav-item" data-page="page-graph"><i class="fas fa-project-diagram"></i><span>实例图谱</span></div>
+        <div class="nav-item" data-page="page-api"><i class="fas fa-code"></i><span>API管理</span></div>
+    </div>
+
+    <!-- ===== 主内容 ===== -->
+    <div class="main">
+        <div class="topbar">
+            <div class="page-title" id="pageTitle">本体设计 <span class="sub">知识图谱的「宪法」</span></div>
+            <div class="topbar-right">
+                <span class="badge"><i class="far fa-clock"></i> 自动保存</span>
+                <span><i class="far fa-user-circle"></i> 管理员</span>
+            </div>
+        </div>
+
+        <div class="page-container">
+
+            <!-- ========================================================= -->
+            <!-- 页面1: 本体设计 -->
+            <!-- ========================================================= -->
+            <div class="page active" id="page-ontology">
+                <div class="prototype-note"><i class="fas fa-info-circle"></i> 类管理 — 定义实体类型及层级关系，作为 LLM 抽取的「宪法」。</div>
+                <div class="two-col">
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-header"><h3><i class="fas fa-tree" style="color:#1a73e8;"></i> 类树</h3><span class="action-link" onclick="openModal('modal-class')"><i class="fas fa-plus"></i> 新建类</span></div>
+                        <div class="tree">
+                            <div class="node"><i class="fas fa-folder-open"></i> LegalDocument <span class="text-muted text-sm">(法规)</span></div>
+                            <div class="tree-item"><div class="node"><i class="fas fa-folder"></i> Chapter <span class="text-muted text-sm">(章)</span></div>
+                                <div class="tree-item"><div class="node" style="background:#f0f5ff;border-radius:6px;"><i class="fas fa-file-alt" style="color:#f9ab00;"></i> Article <span class="text-muted text-sm">(条) </span><span class="status-badge blue" style="font-size:9px;margin-left:6px;">当前</span></div>
+                                    <div class="tree-item"><div class="node"><i class="fas fa-file-signature" style="color:#f9ab00;"></i> Paragraph <span class="text-muted text-sm">(款/项)</span></div></div>
+                                </div>
+                                <div class="node"><i class="fas fa-folder"></i> Section <span class="text-muted text-sm">(节)</span></div>
+                            </div>
+                            <div class="node"><i class="fas fa-folder"></i> Employee <span class="text-muted text-sm">(员工)</span></div>
+                            <div class="node"><i class="fas fa-folder"></i> Company <span class="text-muted text-sm">(公司)</span></div>
+                            <div class="node"><i class="fas fa-folder"></i> Material <span class="text-muted text-sm">(材料)</span></div>
+                            <div class="node"><i class="fas fa-folder"></i> City <span class="text-muted text-sm">(城市)</span></div>
+                        </div>
+                    </div>
+                    <div class="detail-panel">
+                        <div class="flex-between"><div><h3 style="font-size:17px;">Article <span style="font-weight:400;color:#6b7a8f;font-size:13px;">(条)</span></h3><div class="text-muted text-sm">父类: LegalDocument</div></div><div class="flex gap-6"><span class="btn btn-sm btn-outline"><i class="fas fa-edit"></i></span><span class="btn btn-sm btn-outline" style="color:#c62828;"><i class="fas fa-trash"></i></span></div></div>
+                        <div class="label">描述</div><div class="value">法律文本的最小独立逻辑单元，如“第一百二十三条”。</div>
+                        <div class="label">属性 (Data Property)</div><div class="value"><span class="tag">title: String</span><span class="tag">content: Text</span><span class="tag">clause_number: Integer</span></div>
+                        <div class="label">关系 (Object Property)</div><div class="value"><span class="tag tag-blue">BELONGS_TO → Chapter</span><span class="tag tag-blue">REFERS_TO → Article</span></div>
+                        <div class="label">子类</div><div class="value"><span class="tag">Paragraph</span></div>
+                    </div>
+                </div>
+                <div class="flex" style="justify-content:flex-end;gap:10px;margin:12px 0 8px 0;"><span class="btn btn-outline"><i class="fas fa-undo"></i> 回滚</span><span class="btn btn-primary"><i class="fas fa-save"></i> 保存本体</span></div>
+
+                <!-- 本体图谱 -->
+                <div class="card" style="margin-top:8px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-project-diagram" style="color:#7c4dff;"></i> 本体图谱（Schema Graph）</h3>
+                        <div class="flex gap-6">
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-expand"></i> 放大</span>
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-compress"></i> 缩小</span>
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-sync-alt"></i> 重置布局</span>
+                        </div>
+                    </div>
+                    <div class="graph-canvas schema-graph-canvas" style="position:relative;">
+                        <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
+                            <defs>
+                                <marker id="arrow-schema" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c4dff" />
+                                </marker>
+                                <marker id="arrow-ref" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#f9ab00" />
+                                </marker>
+                                <marker id="arrow-obj" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a73e8" />
+                                </marker>
+                            </defs>
+                            <line x1="20%" y1="18%" x2="35%" y2="40%" stroke="#7c4dff" stroke-width="2" marker-end="url(#arrow-schema)" />
+                            <text x="25%" y="26%" fill="#5f6b7a" font-size="9" font-weight="500">包含</text>
+                            <line x1="35%" y1="48%" x2="50%" y2="30%" stroke="#7c4dff" stroke-width="2" marker-end="url(#arrow-schema)" />
+                            <text x="40%" y="42%" fill="#5f6b7a" font-size="9" font-weight="500">包含</text>
+                            <line x1="55%" y1="30%" x2="70%" y2="45%" stroke="#7c4dff" stroke-width="2" marker-end="url(#arrow-schema)" />
+                            <text x="60%" y="36%" fill="#5f6b7a" font-size="9" font-weight="500">包含</text>
+                            <line x1="50%" y1="22%" x2="40%" y2="15%" stroke="#f9ab00" stroke-width="2" marker-end="url(#arrow-ref)" stroke-dasharray="4" />
+                            <text x="52%" y="14%" fill="#b06000" font-size="9" font-weight="500">引用</text>
+                            <line x1="15%" y1="75%" x2="35%" y2="70%" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-obj)" />
+                            <text x="20%" y="82%" fill="#1a73e8" font-size="9" font-weight="500">worksFor</text>
+                            <line x1="40%" y1="72%" x2="60%" y2="65%" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrow-obj)" />
+                            <text x="45%" y="80%" fill="#1a73e8" font-size="9" font-weight="500">usesMaterial</text>
+                            <rect x="12%" y="8%" width="100" height="36" rx="18" fill="#7c4dff" opacity="0.9" />
+                            <text x="14.5%" y="26%" fill="#fff" font-size="11" font-weight="600">LegalDocument</text>
+                            <text x="14.5%" y="37%" fill="#e0d0ff" font-size="8">法规</text>
+                            <rect x="28%" y="34%" width="80" height="36" rx="18" fill="#7c4dff" opacity="0.85" />
+                            <text x="30%" y="52%" fill="#fff" font-size="11" font-weight="600">Chapter</text>
+                            <text x="30%" y="63%" fill="#e0d0ff" font-size="8">章</text>
+                            <rect x="44%" y="18%" width="80" height="36" rx="18" fill="#f9ab00" opacity="0.9" />
+                            <text x="46%" y="36%" fill="#fff" font-size="11" font-weight="600">Article</text>
+                            <text x="46%" y="47%" fill="#fff0d0" font-size="8">条</text>
+                            <rect x="62%" y="38%" width="80" height="36" rx="18" fill="#f9ab00" opacity="0.8" />
+                            <text x="64%" y="56%" fill="#fff" font-size="11" font-weight="600">Paragraph</text>
+                            <text x="64%" y="67%" fill="#fff0d0" font-size="8">款/项</text>
+                            <rect x="5%" y="62%" width="80" height="36" rx="18" fill="#1a73e8" opacity="0.9" />
+                            <text x="7%" y="80%" fill="#fff" font-size="11" font-weight="600">Employee</text>
+                            <text x="7%" y="91%" fill="#d0e0ff" font-size="8">员工</text>
+                            <rect x="28%" y="62%" width="80" height="36" rx="18" fill="#1a73e8" opacity="0.9" />
+                            <text x="30%" y="80%" fill="#fff" font-size="11" font-weight="600">Company</text>
+                            <text x="30%" y="91%" fill="#d0e0ff" font-size="8">公司</text>
+                            <rect x="50%" y="56%" width="80" height="36" rx="18" fill="#34a853" opacity="0.9" />
+                            <text x="52%" y="74%" fill="#fff" font-size="11" font-weight="600">Material</text>
+                            <text x="52%" y="85%" fill="#d0f0d0" font-size="8">材料</text>
+                            <rect x="72%" y="62%" width="60" height="36" rx="18" fill="#34a853" opacity="0.8" />
+                            <text x="74%" y="80%" fill="#fff" font-size="11" font-weight="600">City</text>
+                            <text x="74%" y="91%" fill="#d0f0d0" font-size="8">城市</text>
+                        </svg>
+                        <div style="position:absolute;bottom:10px;right:16px;background:rgba(255,255,255,0.92);border-radius:8px;padding:8px 14px;font-size:11px;border:1px solid #e9edf4;z-index:5;">
+                            <div><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#7c4dff;margin-right:6px;"></span> 类节点</div>
+                            <div><span style="display:inline-block;width:12px;height:2px;background:#7c4dff;margin-right:6px;vertical-align:middle;"></span> 包含关系</div>
+                            <div><span style="display:inline-block;width:12px;height:2px;background:#f9ab00;margin-right:6px;vertical-align:middle;border-top:2px dashed #f9ab00;"></span> 引用关系</div>
+                            <div><span style="display:inline-block;width:12px;height:2px;background:#1a73e8;margin-right:6px;vertical-align:middle;"></span> 业务关系</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面2: 属性管理 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-properties">
+                <div class="prototype-note"><i class="fas fa-hashtag"></i> 属性管理 — Data Property，定义实体自身的特征字段（如名称、年龄、内容）。</div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-hashtag"></i> 数据属性列表</h3><span class="action-link" onclick="openModal('modal-prop')"><i class="fas fa-plus"></i> 新建属性</span></div>
+                    <table><thead><tr><th>属性名</th><th>数据类型</th><th>适用类</th><th>必填</th><th>默认值</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>title</b></td><td><span class="tag">String</span></td><td>Article</td><td>✅</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>content</b></td><td><span class="tag">Text</span></td><td>Article</td><td>✅</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>hasAge</b></td><td><span class="tag">Integer</span></td><td>Employee</td><td>—</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>effective_date</b></td><td><span class="tag">Date</span></td><td>Article</td><td>—</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>clause_number</b></td><td><span class="tag">Integer</span></td><td>Article</td><td>✅</td><td>0</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>employee_id</b></td><td><span class="tag">String</span></td><td>Employee</td><td>✅</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card" style="background:#f8faff;border:1px dashed #b3cff5;">
+                    <div class="text-muted text-sm"><i class="fas fa-lightbulb" style="color:#e37400;"></i> 数据属性是全局资源，通过「适用类」字段限定使用范围。</div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面3: 关系管理 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-relations">
+                <div class="prototype-note"><i class="fas fa-arrow-right-arrow-left"></i> 关系管理 — Object Property，定义类之间的连接线（如“任职于”“位于”）。</div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-arrow-right-arrow-left"></i> 关系列表</h3><span class="action-link" onclick="openModal('modal-rel')"><i class="fas fa-plus"></i> 新建关系</span></div>
+                    <table><thead><tr><th>关系名</th><th>Domain (主语)</th><th>Range (宾语)</th><th>逻辑特征</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>worksFor</b></td><td>Employee</td><td>Company</td><td><span class="tag">Functional</span></td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>locatedIn</b></td><td>Company</td><td>City</td><td><span class="tag">Transitive</span></td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>hasLegalPerson</b></td><td>Company</td><td>Employee</td><td><span class="tag">Functional</span></td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>refersTo</b></td><td>Article</td><td>Article</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>belongsTo</b></td><td>Article</td><td>Chapter</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>usesMaterial</b></td><td>Company</td><td>Material</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面4: 规则配置 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-rules">
+                <div class="prototype-note"><i class="fas fa-code-branch"></i> 推理规则 — 定义 IF-THEN 逻辑，在物化阶段执行。支持 4 类动作。</div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-code-branch"></i> 规则列表</h3><span class="action-link" onclick="openModal('modal-rule')"><i class="fas fa-plus"></i> 新建规则</span></div>
+                    <table><thead><tr><th>规则名称</th><th>触发条件</th><th>动作类型</th><th>动作配置</th><th>状态</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>退休判定</b></td><td>Employee.age >= 60</td><td><span class="tag tag-blue">设置属性值</span></td><td>level = "Senior"</td><td><span class="status-badge green">● 已启用</span></td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-pause" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>位置传递</b></td><td>locatedIn 链 (A→B→C)</td><td><span class="tag tag-blue">推导新关系</span></td><td>创建 A→C (inferred)</td><td><span class="status-badge green">● 已启用</span></td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-pause" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>高龄人才分类</b></td><td>Employee.age >= 35</td><td><span class="tag tag-blue">添加到类</span></td><td>→ SeniorEmployee</td><td><span class="status-badge blue">● 已启用</span></td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-pause" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>清理临时标记</b></td><td>Employee.temp_flag = true</td><td><span class="tag tag-red">删除</span></td><td>删除 temp_flag</td><td><span class="status-badge gray">○ 已停用</span></td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-play" style="margin-left:8px;"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card"><h4 style="margin-bottom:10px;font-size:14px;">规则预览 · 退休判定</h4>
+                    <div class="rule-editor">
+                        <span>IF</span><select><option>Employee</option><option>Article</option></select><span>的</span><select><option>age</option><option>tenure</option></select><select><option>≥</option><option>≤</option></select><input type="text" value="60" style="width:50px;" />
+                        <span>THEN</span>
+                        <select><option>设置属性值</option><option>推导新关系</option><option>添加到类</option><option>删除</option></select>
+                        <span>属性</span><select><option>level</option><option>tag</option></select><span>=</span><input type="text" value="Senior" style="width:80px;" />
+                        <span class="btn btn-sm btn-primary">保存</span>
+                    </div>
+                    <div class="rule-preview mt-8"><i class="fas fa-code"></i> 物化 Cypher: MATCH (n:Employee) WHERE n.age >= 60 SET n.level = 'Senior', n._inferred = true</div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面5: 同义词映射 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-synonyms">
+                <div class="prototype-note"><i class="fas fa-exchange-alt"></i> 同义词映射 — 5 类作用域：类名 / 实体 / 属性名 / 属性值 / 关系名，在抽取后、融合前执行标准化。</div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-exchange-alt"></i> 映射表</h3><div class="flex gap-6"><select style="padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;font-size:12px;"><option>全部类型</option><option>类名映射</option><option selected>实体映射</option><option>属性名映射</option><option>属性值映射</option><option>关系名映射</option></select><span class="action-link" onclick="openModal('modal-syn')"><i class="fas fa-plus"></i> 新建</span></div></div>
+                    <table><thead><tr><th>类型</th><th>标准术语</th><th>别名列表</th><th>适用范围</th><th>命中</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="tag tag-blue">实体映射</span></td><td><b>LTP</b></td><td>磷酸铁锂, 刀片电池, LFP</td><td>Material</td><td>87</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><span class="tag tag-blue">实体映射</span></td><td><b>阿里云_STD</b></td><td>阿里巴巴, Aliyun, 杭州阿里云</td><td>Company</td><td>23</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><span class="tag tag-blue">类名映射</span></td><td><b>Article</b></td><td>法条, 条款, 条文</td><td>—</td><td>45</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><span class="tag tag-blue">属性名映射</span></td><td><b>hasAge</b></td><td>年龄, 岁数, 年纪</td><td>Employee</td><td>12</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><span class="tag tag-blue">属性值映射</span></td><td><b>Male</b></td><td>男, M, 男性</td><td>Employee</td><td>8</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><span class="tag tag-blue">关系名映射</span></td><td><b>worksFor</b></td><td>任职于, 就职于, 供职于</td><td>—</td><td>19</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card" style="background:#f8faff;border:1px dashed #b3cff5;">
+                    <div class="flex text-sm" style="justify-content:space-between;">
+                        <span><i class="fas fa-upload"></i> <a href="#" style="color:#1a73e8;">导入 CSV</a> 批量添加映射</span>
+                        <span><i class="fas fa-download"></i> <a href="#" style="color:#1a73e8;">导出未映射词汇</a> (13 个新词待映射)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面6: 文档管理 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-documents">
+                <div class="prototype-note"><i class="fas fa-file-upload"></i> 文档管理 — 上传 PDF/Word，配置分块策略，触发 LLM 抽取流水线。</div>
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="num">12</div><div class="label">已上传</div></div>
+                    <div class="stat-card"><div class="num">9</div><div class="label">已抽取</div></div>
+                    <div class="stat-card"><div class="num">1</div><div class="label">抽取中</div></div>
+                    <div class="stat-card"><div class="num">2</div><div class="label">待处理</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-file-alt"></i> 文档列表</h3><span class="btn btn-primary" onclick="openModal('modal-doc')"><i class="fas fa-cloud-upload-alt"></i> 上传文档</span></div>
+                    <table><thead><tr><th style="width:24px;"><input type="checkbox" /></th><th>文件名</th><th>大小</th><th>分块策略</th><th>状态</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td><input type="checkbox" /></td><td><b>民法典_物权编.pdf</b></td><td>2.3 MB</td><td>语义段落</td><td><span class="status-badge green">✅ 已抽取</span></td><td><span class="text-muted text-sm"><i class="fas fa-eye"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><input type="checkbox" /></td><td><b>公司法_2024修订.pdf</b></td><td>1.8 MB</td><td>固定 800 字</td><td><span class="status-badge blue">⏳ 抽取中</span></td><td><span class="text-muted text-sm"><i class="fas fa-spinner fa-spin"></i></span></td></tr>
+                            <tr><td><input type="checkbox" /></td><td><b>劳动合同法.pdf</b></td><td>1.2 MB</td><td>标题层级</td><td><span class="status-badge gray">⏸ 待抽取</span></td><td><span class="text-muted text-sm"><i class="fas fa-play"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><input type="checkbox" /></td><td><b>数据安全法.pdf</b></td><td>0.9 MB</td><td>固定 800 字</td><td><span class="status-badge red">❌ 失败</span></td><td><span class="text-muted text-sm"><i class="fas fa-redo"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><input type="checkbox" /></td><td><b>专利法_实施细则.pdf</b></td><td>1.1 MB</td><td>语义段落</td><td><span class="status-badge green">✅ 已抽取</span></td><td><span class="text-muted text-sm"><i class="fas fa-eye"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="flex-between mt-8"><div><span class="btn btn-sm btn-outline"><i class="fas fa-play"></i> 开始抽取 (选中)</span><span class="btn btn-sm btn-outline" style="color:#c62828;"><i class="fas fa-trash"></i> 删除</span></div><div class="text-muted text-sm">已用 18.6 MB</div></div>
+                </div>
+                <div class="card"><h4 style="font-size:14px;margin-bottom:8px;"><i class="fas fa-sliders-h"></i> 分块策略配置</h4>
+                    <div class="flex" style="gap:20px;flex-wrap:wrap;">
+                        <label style="font-size:13px;display:flex;align-items:center;gap:6px;"><input type="radio" name="chunk" checked /> 固定大小分块 每块 <input type="text" value="800" style="width:50px;padding:2px 6px;border:1px solid #d0d9e8;border-radius:4px;" /> 字 重叠 <input type="text" value="200" style="width:50px;padding:2px 6px;border:1px solid #d0d9e8;border-radius:4px;" /> 字</label>
+                        <label style="font-size:13px;display:flex;align-items:center;gap:6px;"><input type="radio" name="chunk" /> 语义段落分块</label>
+                        <label style="font-size:13px;display:flex;align-items:center;gap:6px;"><input type="radio" name="chunk" /> 按标题层级分块</label>
+                        <span class="btn btn-sm btn-outline">应用</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面7: 抽取配置 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-extraction-config">
+                <div class="prototype-note"><i class="fas fa-sliders-h"></i> 抽取配置 — LLM / 外部任务切换，提示词模板管理。</div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-cogs"></i> 执行引擎</h3></div>
+                    <div class="config-tabs">
+                        <div class="config-tab active" onclick="switchConfigTab(this, 'llm')">LLM</div>
+                        <div class="config-tab" onclick="switchConfigTab(this, 'external')">外部任务 (HTTP回调)</div>
+                    </div>
+                    <!-- LLM -->
+                    <div class="config-panel active" id="panel-llm">
+                        <div style="background:#f8faff;border-radius:10px;padding:16px;border:1px solid #e9edf4;">
+                            <div class="flex" style="gap:16px;flex-wrap:wrap;"><span class="text-muted text-sm">模型:</span><select><option>GPT-4o</option><option>GPT-4o-mini</option><option>Claude 3.5 Sonnet</option></select><span class="text-muted text-sm">温度:</span><input type="text" value="0.3" style="width:50px;padding:4px 6px;border:1px solid #d0d9e8;border-radius:4px;" /><span class="text-muted text-sm">Max Token:</span><input type="text" value="4096" style="width:70px;padding:4px 6px;border:1px solid #d0d9e8;border-radius:4px;" /></div>
+                            <div class="flex mt-8" style="gap:12px;flex-wrap:wrap;"><span class="text-muted text-sm">API地址:</span><input type="text" value="https://api.openai.com/v1/chat/completions" style="flex:1;min-width:200px;padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;" /></div>
+                            <div class="flex mt-8" style="gap:12px;flex-wrap:wrap;"><span class="text-muted text-sm">API密钥:</span><input type="password" value="sk-********************************" style="flex:1;min-width:200px;padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;" /></div>
+                        </div>
+                    </div>
+                    <!-- 外部任务 -->
+                    <div class="config-panel" id="panel-external">
+                        <div style="background:#f8faff;border-radius:10px;padding:16px;border:1px solid #e9edf4;">
+                            <div class="flex" style="gap:16px;flex-wrap:wrap;margin-bottom:8px;">
+                                <span class="text-muted text-sm">回调URL:</span>
+                                <input type="text" value="https://your-etl-service.com/api/extract" style="flex:1;min-width:240px;padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;" />
+                            </div>
+                            <div class="flex" style="gap:16px;flex-wrap:wrap;margin-bottom:8px;">
+                                <span class="text-muted text-sm">请求方法:</span>
+                                <select style="padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;"><option>POST</option><option>GET</option></select>
+                                <span class="text-muted text-sm" style="margin-left:12px;">认证方式:</span>
+                                <select style="padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;"><option>无</option><option selected>API Key</option><option>Basic Auth</option><option>Bearer Token</option></select>
+                            </div>
+                            <div class="flex" style="gap:16px;flex-wrap:wrap;margin-bottom:8px;">
+                                <span class="text-muted text-sm">API Key:</span>
+                                <input type="password" value="ext_sk_*******" style="flex:1;min-width:160px;padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;" />
+                            </div>
+                            <div class="flex" style="gap:16px;flex-wrap:wrap;margin-bottom:8px;">
+                                <span class="text-muted text-sm">请求头 (Headers):</span>
+                                <input type="text" value="Content-Type: application/json" style="flex:1;min-width:160px;padding:4px 10px;border:1px solid #d0d9e8;border-radius:6px;" />
+                                <span class="btn btn-sm btn-outline"><i class="fas fa-plus"></i> 添加</span>
+                            </div>
+                            <div style="margin-bottom:8px;">
+                                <span class="text-muted text-sm">请求体模板 (Body):</span>
+                                <textarea style="width:100%;min-height:70px;padding:8px 10px;border:1px solid #d0d9e8;border-radius:6px;font-family:monospace;font-size:12px;margin-top:4px;">{
+                                "doc_id": "{{doc_id}}",
+                                "chunks": {{chunks}},
+                                "schema": {{schema}}
+                            }</textarea>
+                            </div>
+                            <div class="flex" style="gap:16px;flex-wrap:wrap;">
+                                <span class="text-muted text-sm">超时 (秒):</span>
+                                <input type="number" value="60" style="width:70px;padding:4px 6px;border:1px solid #d0d9e8;border-radius:6px;" />
+                                <span class="text-muted text-sm">重试次数:</span>
+                                <input type="number" value="3" style="width:60px;padding:4px 6px;border:1px solid #d0d9e8;border-radius:6px;" />
+                                <span class="text-muted text-sm">并发数:</span>
+                                <input type="number" value="5" style="width:60px;padding:4px 6px;border:1px solid #d0d9e8;border-radius:6px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-file-alt"></i> 提示词模板管理</h3><span class="action-link" onclick="openModal('modal-prompt')"><i class="fas fa-plus"></i> 新建模板</span></div>
+                    <table><thead><tr><th>模板名称</th><th>适用场景</th><th>版本</th><th>最后修改</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>法律标准抽取</b></td><td>法律类文档</td><td>v2.1</td><td>2026-07-14</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-copy" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>企业信息抽取</b></td><td>企业类文档</td><td>v1.0</td><td>2026-07-12</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-copy" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td><b>技术专利抽取</b></td><td>专利类文档</td><td>v1.2</td><td>2026-07-10</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-copy" style="margin-left:8px;"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面8: 抽取结果 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-extraction">
+                <div class="prototype-note"><i class="fas fa-arrow-right-arrow-left"></i> 等价映射由<strong>后端确定性代码（查表替换）</strong>实现，LLM仅负责抽取。页面展示「原始抽取」与「标准化结果」对照。</div>
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="num">12</div><div class="label">抽取实体</div></div>
+                    <div class="stat-card"><div class="num">8</div><div class="label">关系</div></div>
+                    <div class="stat-card"><div class="num">3</div><div class="label">✅ 已映射</div></div>
+                    <div class="stat-card"><div class="num">1</div><div class="label"><span style="color:#c62828;">⚠️ 未映射</span></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-file-alt"></i> 民法典_物权编.pdf</h3><div><span class="status-badge green">✅ 抽取完成</span> <span class="text-muted text-sm" style="margin-left:12px;">置信度: 0.92</span></div></div>
+                    <div class="two-col">
+                        <div class="extraction-box" style="background:#f8faff;">
+                            <div class="box-title"><i class="fas fa-microchip" style="color:#1a73e8;"></i> 原始抽取 (LLM 输出) <span class="badge" style="background:#f1f3f6;font-size:10px;">生肉</span></div>
+                            <div class="extraction-item"><div><b>实体:</b> 刀片电池 <span class="source-tag">Material</span></div><div class="text-muted text-sm" style="margin-top:4px;">关系: 用于 → 电动车</div></div>
+                            <div class="extraction-item"><div><b>实体:</b> 阿里云 <span class="source-tag">Company</span></div><div class="text-muted text-sm" style="margin-top:4px;">关系: 位于 → 杭州</div></div>
+                            <div class="extraction-item"><div><b>实体:</b> 张明明 <span class="source-tag">Employee</span></div><div class="text-muted text-sm" style="margin-top:4px;">属性: 年龄 34</div></div>
+                            <div class="extraction-item" style="border-left:3px solid #c62828;"><div><b>实体:</b> 钠离子电池 <span class="source-tag">Material</span></div><div class="text-muted text-sm" style="margin-top:4px;">⚠️ 未命中任何映射规则</div></div>
+                        </div>
+                        <div class="extraction-box" style="background:#f4faf7;border-color:#c8e6d9;">
+                            <div class="box-title"><i class="fas fa-check-circle" style="color:#1e8e3e;"></i> 标准化结果 (映射后) <span class="badge" style="background:#e6f4ea;font-size:10px;">熟肉</span></div>
+                            <div class="extraction-item" style="border-left:3px solid #1e8e3e;"><div><b>实体:</b> LTP <span class="target-tag">Material</span> <span style="background:#dbeafe;padding:1px 8px;border-radius:12px;font-size:11px;margin-left:8px;"><i class="fas fa-arrow-right"></i> 映射自: 刀片电池</span></div><div class="text-muted text-sm" style="margin-top:4px;">关系: 用于 → 电动车</div></div>
+                            <div class="extraction-item" style="border-left:3px solid #1e8e3e;"><div><b>实体:</b> 阿里云_STD <span class="target-tag">Company</span> <span style="background:#dbeafe;padding:1px 8px;border-radius:12px;font-size:11px;margin-left:8px;"><i class="fas fa-arrow-right"></i> 映射自: 阿里云</span></div><div class="text-muted text-sm" style="margin-top:4px;">关系: 位于 → 杭州</div></div>
+                            <div class="extraction-item" style="border-left:3px solid #1e8e3e;"><div><b>实体:</b> 张明明 <span class="target-tag">Employee</span> <span style="background:#f1f3f6;padding:1px 8px;border-radius:12px;font-size:11px;margin-left:8px;color:#5f6b7a;">无映射</span></div><div class="text-muted text-sm" style="margin-top:4px;">属性: 年龄 34</div></div>
+                            <div class="extraction-item" style="border-left:3px solid #e37400;background:#fef7e0;"><div><b>实体:</b> 钠离子电池 <span class="source-tag">Material</span> <span style="background:#fce8e6;padding:1px 8px;border-radius:12px;font-size:11px;margin-left:8px;color:#c62828;"><i class="fas fa-exclamation-triangle"></i> 未映射</span><span class="btn btn-sm btn-outline" style="margin-left:8px;padding:0 10px;font-size:11px;" onclick="openModal('modal-quick-syn')"><i class="fas fa-plus"></i> 添加映射</span></div><div class="text-muted text-sm" style="margin-top:4px;">💡 建议映射为: <b>SodiumBattery</b> (已有 3 个文档提及)</div></div>
+                        </div>
+                    </div>
+                    <div class="mt-8" style="background:#f8faff;border-radius:10px;padding:12px 16px;border:1px solid #e9edf4;">
+                        <div class="flex-between"><div><i class="fas fa-list-ul" style="color:#1a73e8;"></i> <b>映射明细日志</b> <span class="text-muted text-sm">（由系统代码执行，非LLM生成）</span></div><span class="text-muted text-sm"><i class="fas fa-check-circle" style="color:#1e8e3e;"></i> 3 条命中 · 1 条未命中</span></div>
+                        <div class="log-item"><span class="hit">✅</span> "刀片电池" → 命中同义词表，标准化为 <b>LTP</b> (规则ID: #SYN-012)</div>
+                        <div class="log-item"><span class="hit">✅</span> "阿里云" → 命中同义词表，标准化为 <b>阿里云_STD</b> (规则ID: #SYN-008)</div>
+                        <div class="log-item"><span class="hit">✅</span> "杭州" → 命中同义词表，标准化为 <b>杭州_STD</b> (规则ID: #SYN-003)</div>
+                        <div class="log-item"><span class="miss">❌</span> "钠离子电池" → <span style="color:#c62828;">未命中任何映射规则</span>，建议管理员补充映射</div>
+                    </div>
+                    <div class="flex mt-12" style="justify-content:flex-end;gap:10px;">
+                        <span class="btn btn-outline"><i class="fas fa-redo"></i> 重新抽取</span>
+                        <span class="btn btn-outline" style="color:#c62828;"><i class="fas fa-times"></i> 驳回全部</span>
+                        <span class="btn btn-success" onclick="alert('✅ 已确认入库，进入融合阶段！')"><i class="fas fa-check-double"></i> 确认入库并触发融合</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面9: 质量预检 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-postprocess">
+                <div class="prototype-note"><i class="fas fa-check-circle"></i> 质量预检 — 检查数据完整性、类型约束、孤立节点。<strong>（等价映射已在「抽取结果」页面完成）</strong></div>
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="num" style="color:#1e8e3e;">0</div><div class="label">❌ 严重错误</div></div>
+                    <div class="stat-card"><div class="num" style="color:#e37400;">1</div><div class="label">⚠️ 警告</div></div>
+                    <div class="stat-card"><div class="num">12</div><div class="label">✅ 检查通过</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-clipboard-check"></i> 检查报告</h3></div>
+                    <div style="background:#f8faff;padding:12px 16px;border-radius:8px;border-left:3px solid #1a73e8;margin-bottom:10px;">
+                        <div class="flex-between"><b>约束检查 (Domain / Range)</b><span class="status-badge green">✅ 全部通过</span></div>
+                        <div class="text-muted text-sm">所有实体均满足本体定义的 Domain 和 Range 约束。</div>
+                    </div>
+                    <div style="background:#fef7e0;padding:12px 16px;border-radius:8px;border-left:3px solid #e37400;">
+                        <div class="flex-between"><b>⚠️ 数据完整性警告</b><span class="status-badge yellow">1 项</span></div>
+                        <div class="text-muted text-sm">Article “第123条” 的 <b>content</b> 属性值为空，建议补全。</div>
+                    </div>
+                    <div style="background:#f8faff;padding:12px 16px;border-radius:8px;border-left:3px solid #1a73e8;margin-top:10px;">
+                        <div class="flex-between"><b>孤立节点检查</b><span class="status-badge green">✅ 无孤立节点</span></div>
+                        <div class="text-muted text-sm">所有实体均至少关联 1 条关系。</div>
+                    </div>
+                    <div class="flex mt-8" style="justify-content:flex-end;gap:10px;">
+                        <span class="btn btn-outline"><i class="fas fa-file-export"></i> 导出报告</span>
+                        <span class="btn btn-success"><i class="fas fa-check-double"></i> 全部通过，进入融合</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面10: 融合审核 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-fusion">
+                <div class="prototype-note"><i class="fas fa-merge"></i> 实体融合 — 自动合并 + 人工审核，融合策略可配置。</div>
+                <div class="stat-grid"><div class="stat-card"><div class="num">2</div><div class="label">待审核</div></div><div class="stat-card"><div class="num">5</div><div class="label">已自动合并</div></div><div class="stat-card"><div class="num">0</div><div class="label">已拒绝</div></div></div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-merge"></i> 疑似重复实体</h3><span class="action-link" onclick="openModal('modal-fusion-config')"><i class="fas fa-cog"></i> 融合策略配置</span></div>
+                    <div style="background:#f0f7ff;border-radius:10px;padding:14px 18px;border:1px solid #dbeafe;margin-bottom:12px;"><div class="flex-between"><div><span class="status-badge blue">相似度 0.935 · 自动匹配</span><div style="margin-top:4px;"><b>A:</b> 张明明 (Employee, 34, 阿里云_STD) &nbsp; <b>B:</b> 张三 (Employee, 35, 阿里云_STD)</div></div><div class="flex gap-6"><span class="btn btn-sm btn-success"><i class="fas fa-check"></i> 确认合并</span><span class="btn btn-sm btn-outline" style="color:#c62828;"><i class="fas fa-times"></i> 拒绝</span></div></div></div>
+                    <div style="background:#fef7e0;border-radius:10px;padding:14px 18px;border:1px solid #ffe69c;"><div class="flex-between"><div><span class="status-badge yellow">相似度 0.72 · 需人工审核</span><div style="margin-top:4px;"><b>A:</b> 磷酸铁锂 (Material) &nbsp; <b>B:</b> LFP (Material)</div></div><div class="flex gap-6"><span class="btn btn-sm btn-success"><i class="fas fa-check"></i> 确认合并</span><span class="btn btn-sm btn-outline" style="color:#c62828;"><i class="fas fa-times"></i> 拒绝</span><span class="btn btn-sm btn-outline"><i class="fas fa-eye"></i> 详情</span></div></div></div>
+                    <div style="background:#f0f7ff;border-radius:10px;padding:14px 18px;border:1px solid #dbeafe;margin-top:10px;"><div class="flex-between"><div><span class="status-badge blue">相似度 0.98 · 自动匹配</span><div style="margin-top:4px;"><b>A:</b> 杭州 (City) &nbsp; <b>B:</b> 杭州市 (City)</div></div><div class="flex gap-6"><span class="btn btn-sm btn-success"><i class="fas fa-check"></i> 确认合并</span><span class="btn btn-sm btn-outline" style="color:#c62828;"><i class="fas fa-times"></i> 拒绝</span></div></div></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面11: 推理物化 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-materialization">
+                <div class="prototype-note"><i class="fas fa-bolt"></i> 推理物化 — 将规则执行结果写入 Neo4j，支持手动触发与日志查看。</div>
+                <div class="stat-grid"><div class="stat-card"><div class="num">3</div><div class="label">已启用规则</div></div><div class="stat-card"><div class="num">47</div><div class="label">影响节点</div></div><div class="stat-card"><div class="num">312ms</div><div class="label">上次耗时</div></div></div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-bolt"></i> 物化任务</h3><span class="btn btn-primary btn-sm"><i class="fas fa-play"></i> 手动触发物化</span></div>
+                    <table><thead><tr><th>规则名称</th><th>状态</th><th>影响节点</th><th>耗时</th><th>最后执行</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>退休判定</b></td><td><span class="status-badge green">✅ 已物化</span></td><td>23</td><td>14ms</td><td>14:23:12</td><td><span class="text-muted text-sm"><i class="fas fa-info-circle"></i> 详情</span></td></tr>
+                            <tr><td><b>位置传递</b></td><td><span class="status-badge green">✅ 已物化</span></td><td>6</td><td>287ms</td><td>14:23:12</td><td><span class="text-muted text-sm"><i class="fas fa-info-circle"></i> 详情</span></td></tr>
+                            <tr><td><b>高龄人才分类</b></td><td><span class="status-badge green">✅ 已物化</span></td><td>18</td><td>11ms</td><td>14:23:12</td><td><span class="text-muted text-sm"><i class="fas fa-info-circle"></i> 详情</span></td></tr>
+                            <tr><td><b>法人反向</b></td><td><span class="status-badge gray">⏸ 已停用</span></td><td>—</td><td>—</td><td>—</td><td><span class="text-muted text-sm"><i class="fas fa-play"></i> 启用</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card"><h4 style="font-size:14px;margin-bottom:6px;"><i class="fas fa-list-ul"></i> 物化日志</h4>
+                    <div class="text-sm" style="font-family:monospace;color:#1f2a3f;line-height:1.8;">
+                        [14:23:12] 规则“退休判定” 更新 23 个 Employee.level = 'Senior'<br />
+                        [14:23:12] 规则“位置传递” 创建 6 条 locatedIn (inferred)<br />
+                        [14:23:11] 规则“高龄人才分类” 将 18 个 Employee 归类为 SeniorEmployee<br />
+                        [14:23:10] 规则“退休判定” 触发条件检查完成
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面12: 实例图谱 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-graph">
+                <div class="prototype-note"><i class="fas fa-project-diagram"></i> 实例图谱 — Neo4j 中的具体实体节点与关系。虚线表示推断关系 (inferred)。</div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-project-diagram"></i> 实例图谱（Instance Graph）</h3>
+                        <div class="flex gap-6">
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-search"></i> 搜索</span>
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-expand"></i> 全屏</span>
+                        </div>
+                    </div>
+                    <div class="graph-canvas" style="height:320px;">
+                        <svg viewBox="0 0 800 280" width="100%" height="100%" style="display:block;">
+                            <!-- 边 -->
+                            <line x1="140" y1="60" x2="300" y2="40" stroke="#6b7a8f" stroke-width="2" />
+                            <text x="200" y="40" fill="#6b7a8f" font-size="10" font-weight="500">任职于</text>
+                            <line x1="340" y1="40" x2="500" y2="60" stroke="#6b7a8f" stroke-width="2" />
+                            <text x="400" y="40" fill="#6b7a8f" font-size="10" font-weight="500">位于</text>
+                            <line x1="320" y1="50" x2="280" y2="140" stroke="#6b7a8f" stroke-width="2" stroke-dasharray="4" />
+                            <text x="270" y="100" fill="#6b7a8f" font-size="10" font-weight="500">包含</text>
+                            <line x1="360" y1="50" x2="520" y2="140" stroke="#ea4335" stroke-width="2" stroke-dasharray="6" />
+                            <text x="420" y="90" fill="#ea4335" font-size="10" font-weight="500">研究 (inferred)</text>
+                            <line x1="100" y1="200" x2="320" y2="70" stroke="#ea4335" stroke-width="2" stroke-dasharray="6" />
+                            <text x="180" y="140" fill="#ea4335" font-size="10" font-weight="500">协作 (inferred)</text>
+                            <!-- 节点 -->
+                            <circle cx="140" cy="60" r="32" fill="#1a73e8" />
+                            <text x="140" y="64" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle">张三</text>
+                            <text x="140" y="78" fill="#d0e0ff" font-size="9" text-anchor="middle">Employee</text>
+                            <circle cx="340" cy="40" r="32" fill="#f9ab00" />
+                            <text x="340" y="44" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle">阿里云</text>
+                            <text x="340" y="58" fill="#fff0d0" font-size="9" text-anchor="middle">Company</text>
+                            <circle cx="500" cy="60" r="28" fill="#34a853" />
+                            <text x="500" y="64" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle">杭州</text>
+                            <text x="500" y="78" fill="#d0f0d0" font-size="9" text-anchor="middle">City</text>
+                            <circle cx="280" cy="160" r="32" fill="#7c4dff" />
+                            <text x="280" y="164" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">第123条</text>
+                            <text x="280" y="178" fill="#e0d0ff" font-size="9" text-anchor="middle">Article</text>
+                            <circle cx="520" cy="160" r="28" fill="#ea4335" />
+                            <text x="520" y="164" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle">LTP</text>
+                            <text x="520" y="178" fill="#ffd0d0" font-size="9" text-anchor="middle">Material</text>
+                            <circle cx="80" cy="200" r="28" fill="#1a73e8" />
+                            <text x="80" y="204" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle">李四</text>
+                            <text x="80" y="218" fill="#d0e0ff" font-size="9" text-anchor="middle">Employee</text>
+                            <!-- 图例 -->
+                            <rect x="620" y="220" width="160" height="48" rx="6" fill="rgba(255,255,255,0.9)" stroke="#e9edf4" stroke-width="1" />
+                            <line x1="632" y1="232" x2="660" y2="232" stroke="#6b7a8f" stroke-width="2" />
+                            <text x="666" y="236" fill="#5f6b7a" font-size="10">声明关系</text>
+                            <line x1="632" y1="252" x2="660" y2="252" stroke="#ea4335" stroke-width="2" stroke-dasharray="6" />
+                            <text x="666" y="256" fill="#ea4335" font-size="10">推断关系</text>
+                        </svg>
+                    </div>
+                    <div class="flex-between mt-8">
+                        <div class="text-muted text-sm"><i class="fas fa-circle" style="color:#ea4335;"></i> 虚线表示推断关系 (inferred)</div>
+                        <div class="flex gap-6">
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-arrows-alt-h"></i> 力导向</span>
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-tree"></i> 树形</span>
+                            <span class="btn btn-sm btn-outline"><i class="fas fa-filter"></i> 筛选</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 页面13: API管理 -->
+            <!-- ========================================================= -->
+            <div class="page" id="page-api">
+                <div class="prototype-note"><i class="fas fa-code"></i> API 管理 — 密钥 + 端点 + 授权绑定，为 Agent 应用提供图谱服务。</div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-key"></i> API密钥</h3><span class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> 新建密钥</span></div>
+                    <table><thead><tr><th>密钥名称</th><th>API Key</th><th>状态</th><th>配额</th><th>已授权端点</th><th>操作</th></tr></thead>
+                        <tbody>
+                            <tr><td>Agent-法律问答</td><td><code style="background:#f1f3f6;padding:1px 6px;border-radius:4px;font-size:12px;">sk_law_***xyz</code></td><td><span class="status-badge green">● 有效</span></td><td>5000/日</td><td>query, path</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td>Agent-企业内搜</td><td><code style="background:#f1f3f6;padding:1px 6px;border-radius:4px;font-size:12px;">sk_ent_***abc</code></td><td><span class="status-badge green">● 有效</span></td><td>3000/日</td><td>query, neighbors</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                            <tr><td>Agent-研发助手</td><td><code style="background:#f1f3f6;padding:1px 6px;border-radius:4px;font-size:12px;">sk_rd_***def</code></td><td><span class="status-badge yellow">⚠️ 即将过期</span></td><td>1200/日</td><td>query, search</td><td><span class="text-muted text-sm"><i class="fas fa-edit"></i> <i class="fas fa-trash" style="margin-left:8px;"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-plug"></i> 端点列表</h3><span class="action-link">在线 Swagger</span></div>
+                    <table><thead><tr><th>端点</th><th>方法</th><th>描述</th><th>状态</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/api/v1/graph/query</code></td><td><span class="tag">POST</span></td><td>自然语言转图谱查询 (NL2Cypher)</td><td><span class="status-badge green">● 运行中</span></td></tr>
+                            <tr><td><code>/api/v1/graph/path</code></td><td><span class="tag">POST</span></td><td>两节点间最短路径</td><td><span class="status-badge green">● 运行中</span></td></tr>
+                            <tr><td><code>/api/v1/graph/neighbors</code></td><td><span class="tag">GET</span></td><td>N 跳邻居查询</td><td><span class="status-badge green">● 运行中</span></td></tr>
+                            <tr><td><code>/api/v1/graph/search</code></td><td><span class="tag">GET</span></td><td>语义向量检索</td><td><span class="status-badge blue">🔧 开发中</span></td></tr>
+                            <tr><td><code>/api/v1/graph/stats</code></td><td><span class="tag">GET</span></td><td>图谱统计信息</td><td><span class="status-badge green">● 运行中</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card"><h4 style="font-size:14px;margin-bottom:8px;"><i class="fas fa-lock"></i> 授权绑定示例 · sk_law_***xyz</h4>
+                    <div class="auth-grid"><label><input type="checkbox" checked /> /api/v1/graph/query</label><label><input type="checkbox" checked /> /api/v1/graph/path</label><label><input type="checkbox" /> /api/v1/graph/neighbors</label><label><input type="checkbox" /> /api/v1/graph/search</label></div>
+                    <span class="btn btn-sm btn-primary mt-8">保存授权</span>
+                </div>
+            </div>
+
+        </div><!-- /page-container -->
+    </div><!-- /main -->
+
+
+    <!-- ========================================================= -->
+    <!-- 弹窗区 -->
+    <!-- ========================================================= -->
+    <div class="modal-overlay" id="modal-class">
+        <div class="modal-box"><h3><i class="fas fa-plus-circle" style="color:#1a73e8;"></i> 新建类</h3>
+            <div class="field"><label>类名 (英文)</label><input type="text" value="Regulation" /></div>
+            <div class="field"><label>中文名</label><input type="text" value="行政法规" /></div>
+            <div class="field"><label>父类</label><select><option>LegalDocument</option><option>Chapter</option><option selected>Article</option><option>— 无 —</option></select></div>
+            <div class="field"><label>描述</label><input type="text" placeholder="简要描述这个类的含义" /></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-class')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-class')">创建</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-prop">
+        <div class="modal-box"><h3><i class="fas fa-plus-circle" style="color:#1a73e8;"></i> 新建数据属性</h3>
+            <div class="field"><label>属性名</label><input type="text" value="hasEmail" /></div>
+            <div class="field"><label>数据类型</label><select><option>String</option><option>Integer</option><option>Boolean</option><option>Text</option><option>Date</option></select></div>
+            <div class="field"><label>适用类</label><select><option>Employee</option><option>Company</option><option>Article</option></select></div>
+            <div class="field"><label><input type="checkbox" /> 必填</label><label style="margin-left:16px;"><input type="checkbox" /> 唯一 (Functional)</label></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-prop')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-prop')">创建</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-rel">
+        <div class="modal-box"><h3><i class="fas fa-plus-circle" style="color:#1a73e8;"></i> 新建关系</h3>
+            <div class="field"><label>关系名</label><input type="text" value="collaboratesWith" /></div>
+            <div class="field"><label>Domain (主语类)</label><select><option>Employee</option><option>Company</option><option>Article</option></select></div>
+            <div class="field"><label>Range (宾语类)</label><select><option>Employee</option><option>Company</option><option>Article</option></select></div>
+            <div class="field"><label>逻辑特征</label><div class="flex gap-6"><label><input type="checkbox" /> Functional</label><label><input type="checkbox" /> Transitive</label><label><input type="checkbox" /> Symmetric</label></div></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-rel')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-rel')">创建</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-rule">
+        <div class="modal-box"><h3><i class="fas fa-plus-circle" style="color:#1a73e8;"></i> 新建推理规则</h3>
+            <div class="field"><label>规则名称</label><input type="text" value="资深专家标记" /></div>
+            <div class="field"><label>目标类</label><select><option>Employee</option><option>Company</option><option>Article</option></select></div>
+            <div class="field"><label>条件</label><div class="flex"><select><option>age</option><option>tenure</option></select><select><option>≥</option><option>≤</option><option>=</option></select><input type="text" value="35" style="width:60px;" /><span class="btn btn-sm btn-outline">+ 添加条件</span></div></div>
+            <div class="field"><label>执行动作</label></div>
+            <div class="action-type-grid">
+                <div class="action-type-card active" onclick="selectAction(this)"><div class="title">① 设置属性值</div><div class="desc">修改/添加数据属性</div></div>
+                <div class="action-type-card" onclick="selectAction(this)"><div class="title">② 推导新关系</div><div class="desc">创建关系边</div></div>
+                <div class="action-type-card" onclick="selectAction(this)"><div class="title">③ 添加到类</div><div class="desc">归入目标类</div></div>
+                <div class="action-type-card" onclick="selectAction(this)"><div class="title">④ 删除</div><div class="desc">清除属性/关系</div></div>
+            </div>
+            <div class="field" style="background:#f8faff;padding:12px 16px;border-radius:8px;border:1px solid #e9edf4;">
+                <label>动作配置 (设置属性值)</label>
+                <div class="flex"><span>属性</span><select><option>level</option><option>tag</option></select><span>=</span><input type="text" value="Expert" style="width:100px;" /></div>
+            </div>
+            <div class="field"><label>优先级</label><input type="number" value="1" style="width:80px;" /> <label style="margin-left:16px;"><input type="checkbox" checked /> 启用</label></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-rule')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-rule')">保存规则</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-syn">
+        <div class="modal-box"><h3><i class="fas fa-plus-circle" style="color:#1a73e8;"></i> 新建同义词映射</h3>
+            <div class="field"><label>映射类型</label><select><option>实体映射</option><option>类名映射</option><option>属性名映射</option><option>属性值映射</option><option>关系名映射</option></select></div>
+            <div class="field"><label>标准术语</label><input type="text" value="钠离子电池" /></div>
+            <div class="field"><label>别名 (用逗号分隔)</label><input type="text" value="钠电池, Na-ion, 钠电" /></div>
+            <div class="field"><label>适用范围</label><input type="text" value="Material" placeholder="如 Material / Employee" /></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-syn')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-syn')">创建</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-doc">
+        <div class="modal-box"><h3><i class="fas fa-cloud-upload-alt" style="color:#1a73e8;"></i> 上传文档</h3>
+            <div class="field" style="border:2px dashed #d0d9e8;border-radius:12px;padding:24px;text-align:center;color:#6b7a8f;"><i class="fas fa-file-pdf" style="font-size:36px;color:#c62828;"></i><div style="margin-top:6px;">拖拽上传或 <a href="#" style="color:#1a73e8;">选择文件</a></div><div class="text-sm text-muted">PDF, Word, TXT (最大 20MB)</div></div>
+            <div class="field"><label>分块策略</label><select><option>固定大小分块 (800字, 重叠200)</option><option>语义段落分块</option><option>按标题层级分块</option></select></div>
+            <div class="field"><label>所属分类</label><select><option>法律类</option><option>企业类</option><option>技术类</option></select></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-doc')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-doc')"><i class="fas fa-upload"></i> 上传</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-prompt">
+        <div class="modal-box"><h3><i class="fas fa-plus-circle" style="color:#1a73e8;"></i> 新建提示词模板</h3>
+            <div class="field"><label>模板名称</label><input type="text" value="合同抽取" /></div>
+            <div class="field"><label>适用场景</label><input type="text" value="合同类文档" /></div>
+            <div class="field"><label>基础提示词</label><textarea>你是一个知识抽取专家。本体定义: {{class_list}} {{relation_list}} {{synonym_list}}。待抽取文本: {{chunk_content}}。输出JSON格式: {{output_schema}}</textarea></div>
+            <div class="field"><label>可用变量</label><div class="flex gap-6"><span class="tag">{{class_list}}</span><span class="tag">{{relation_list}}</span><span class="tag">{{synonyms}}</span><span class="tag">{{chunk_content}}</span></div></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-prompt')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-prompt')">保存</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-fusion-config">
+        <div class="modal-box"><h3><i class="fas fa-cog" style="color:#1a73e8;"></i> 融合策略配置</h3>
+            <div class="field"><label>相似度维度权重</label>
+                <div class="slider-row"><span style="width:120px;font-size:13px;">名称相似度</span><input type="range" min="0" max="100" value="40" /><span class="val">40%</span></div>
+                <div class="slider-row"><span style="width:120px;font-size:13px;">属性重合度</span><input type="range" min="0" max="100" value="30" /><span class="val">30%</span></div>
+                <div class="slider-row"><span style="width:120px;font-size:13px;">关系重合度</span><input type="range" min="0" max="100" value="20" /><span class="val">20%</span></div>
+                <div class="slider-row"><span style="width:120px;font-size:13px;">向量语义相似度</span><input type="range" min="0" max="100" value="10" /><span class="val">10%</span></div>
+            </div>
+            <div class="field"><label>自动合并阈值</label><input type="number" value="0.90" step="0.01" style="width:80px;" /> <span class="text-muted text-sm">≥ 此分数自动合并</span></div>
+            <div class="field"><label>人工审核阈值</label><input type="number" value="0.60" step="0.01" style="width:80px;" /> <span class="text-muted text-sm">在此区间进入审核队列</span></div>
+            <div class="field"><label>合并策略</label><select><option>保留先入库的为主节点</option><option>保留后入库的为主节点</option><option>保留属性更完整的为主节点</option></select></div>
+            <div class="field"><label>冲突解决</label><select><option>取最新时间戳</option><option>取置信度更高</option><option>人工裁决</option></select></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-fusion-config')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-fusion-config')">保存配置</span></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-quick-syn">
+        <div class="modal-box"><h3><i class="fas fa-plus-circle" style="color:#1a73e8;"></i> 快速添加同义词映射</h3>
+            <div class="field"><label>未映射术语</label><input type="text" value="钠离子电池" disabled style="background:#f1f3f6;" /></div>
+            <div class="field"><label>映射类型</label><select><option>实体映射</option><option>类名映射</option><option selected>属性值映射</option></select></div>
+            <div class="field"><label>标准术语</label><input type="text" value="SodiumBattery" placeholder="输入标准术语" /></div>
+            <div class="field"><label>适用范围</label><input type="text" value="Material" placeholder="如 Material / Employee" /></div>
+            <div class="actions"><span class="btn btn-outline" onclick="closeModal('modal-quick-syn')">取消</span><span class="btn btn-primary" onclick="closeModal('modal-quick-syn');alert('✅ 映射已添加，将自动刷新当前页面！')">添加并刷新</span></div>
+            <div class="text-muted text-sm mt-8" style="border-top:1px solid #eef2f8;padding-top:12px;"><i class="fas fa-info-circle"></i> 此映射将保存至「同义词映射」表，由后端代码执行，后续抽取自动生效。</div>
+        </div>
+    </div>
+
+
+    <script>
+        // ===== 页面切换 =====
+        const navItems = document.querySelectorAll('.nav-item');
+        const titleMap = {
+            'page-ontology': '本体设计',
+            'page-properties': '属性管理',
+            'page-relations': '关系管理',
+            'page-rules': '规则配置',
+            'page-synonyms': '同义词映射',
+            'page-documents': '文档管理',
+            'page-extraction-config': '抽取配置',
+            'page-extraction': '抽取结果',
+            'page-postprocess': '质量预检',
+            'page-fusion': '融合审核',
+            'page-materialization': '推理物化',
+            'page-graph': '实例图谱',
+            'page-api': 'API管理'
+        };
+        const subMap = {
+            'page-ontology': '类管理 · 含本体图谱',
+            'page-properties': 'Data Property · 特征字段',
+            'page-relations': 'Object Property · 类间连接',
+            'page-rules': 'IF-THEN 推理规则 · 4类动作',
+            'page-synonyms': '5类作用域 · 别名标准化',
+            'page-documents': '上传 · 分块 · 抽取',
+            'page-extraction-config': 'LLM / 外部任务 · 提示词模板',
+            'page-extraction': 'LLM原始 ↔ 标准化映射对照',
+            'page-postprocess': '数据完整性 · 类型约束 · 孤立节点',
+            'page-fusion': '自动合并 + 人工审核',
+            'page-materialization': '规则物化 · 日志',
+            'page-graph': '实例图谱 · 可视化',
+            'page-api': '密钥 · 端点 · 授权绑定'
+        };
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.dataset.page;
+                if (!pageId) return;
+                navItems.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                const target = document.getElementById(pageId);
+                if (target) target.classList.add('active');
+                const titleEl = document.getElementById('pageTitle');
+                if (titleEl) {
+                    titleEl.innerHTML = `${titleMap[pageId] || pageId} <span class="sub">${subMap[pageId] || ''}</span>`;
+                }
+                document.querySelector('.page-container').scrollTop = 0;
+            });
+        });
+
+        // ===== 弹窗控制 =====
+        function openModal(id) {
+            document.getElementById(id).classList.add('show');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+        document.querySelectorAll('.modal-overlay').forEach(ov => {
+            ov.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('show');
+            });
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.show').forEach(el => el.classList.remove('show'));
+        });
+
+        // ===== 配置选项卡切换 (LLM / 外部任务) =====
+        function switchConfigTab(el, type) {
+            document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('panel-llm').classList.remove('active');
+            document.getElementById('panel-external').classList.remove('active');
+            if (type === 'llm') document.getElementById('panel-llm').classList.add('active');
+            else document.getElementById('panel-external').classList.add('active');
+        }
+
+        // ===== 动作类型选择 =====
+        function selectAction(el) {
+            const parent = el.closest('.action-type-grid');
+            parent.querySelectorAll('.action-type-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            const configArea = el.closest('.modal-box').querySelector('.field[style*="background:#f8faff"]');
+            if (configArea) {
+                const labels = ['设置属性值', '推导新关系', '添加到类', '删除'];
+                const idx = Array.from(parent.children).indexOf(el);
+                const configs = [
+                    '<div class="flex"><span>属性</span><select><option>level</option><option>tag</option></select><span>=</span><input type="text" value="Senior" style="width:100px;" /></div>',
+                    '<div class="flex"><span>关系</span><select><option>worksFor</option><option>locatedIn</option></select><span>目标</span><select><option>通过路径匹配</option><option>指定实体</option></select></div>',
+                    '<div class="flex"><span>目标类</span><select><option>SeniorEmployee</option><option>ExpertEmployee</option></select></div>',
+                    '<div class="flex"><span>删除</span><select><option>属性: temp_flag</option><option>关系: temp_link</option></select></div>'
+                ];
+                configArea.innerHTML = `<label>动作配置 (${labels[idx]})</label>` + configs[idx];
+            }
+        }
+
+        console.log('✅ 完整PRD原型已加载 · 13个页面全部填充完整');
+    </script>
+
+</body>
+</html>
